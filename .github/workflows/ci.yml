@@ -27,9 +27,9 @@ jobs:
           if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ]; then
             echo "Building and testing $dir"
             cd "$dir"
-            cmake -S . -B build
-            cmake --build build
-            ctest --output-on-failure
+            cmake -S . -B target
+            cmake --build target
+            ctest --output-on-failure --test-dir target
             cd ../..
           fi
         done
