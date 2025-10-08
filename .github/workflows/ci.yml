@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+
+    - name: Build and test cpp projects
+      run: |
+        for dir in cpp/*/; do
+          if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ]; then
+            echo "Building and testing $dir"
+            cd "$dir"
+            cmake -S . -B build
+            cmake --build build
+            ctest --output-on-failure
+            cd ../..
+          fi
+        done
+
+    # - name: Build Docker image
+    #   run: |
+    #     docker build -t unit-test-sample-builder .
+
+    # - name: Save Docker image as artifact
+    #   run: |
+    #     docker save unit-test-sample-builder > unit-test-sample-builder.tar
+
+    # - name: Upload artifact
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: unit-test-sample-builder
+    #     path: unit-test-sample-builder.tar
