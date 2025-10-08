@@ -1,0 +1,6 @@
+[submodule "cpp/third_party/googletest"]
+	path = cpp/third_party/googletest
+	url = https://github.com/google/googletest.git
+[submodule "cpp/third_party/catch2"]
+	path = cpp/third_party/catch2
+	url = https://github.com/catchorg/Catch2.git

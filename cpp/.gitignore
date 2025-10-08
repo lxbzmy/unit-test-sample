@@ -1,0 +1,10 @@
+.*
+!.gitignore
+CMakeCache.txt
+Makefile 
+*.cmake
+lib
+Testing
+bin
+CMakeFiles
+Testing
