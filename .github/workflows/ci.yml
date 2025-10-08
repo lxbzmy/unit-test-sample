@@ -23,20 +23,16 @@ jobs:
 
     - name: Build and test cpp projects
       run: |
-        for dir in cpp/*/; do
-          if [ -d "$dir" ] && [ -f "$dir/CMakeLists.txt" ]; then
-            echo "Building and testing $dir"
-            cd "$dir"
-            cmake -S . -B target
-            cmake --build target
-            ctest --output-on-failure --test-dir target
-            cd ../..
-          fi
-        done
+        cd cpp
+        bash build.sh
 
-    # - name: Build Docker image
-    #   run: |
-    #     docker build -t unit-test-sample-builder .
+    - name: Build Docker image
+      run: |
+        docker build -t unit-test-sample-builder .
+
+    - name: Run build command again in container.
+      run: |
+        docker run --rm unit-test-sample-builder bash -c "cd cpp && bash build.sh"
 
     # - name: Save Docker image as artifact
     #   run: |
