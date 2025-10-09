@@ -1,0 +1,13 @@
+classDiagram
+    class Bomb {
+        -double effect
+        +Bomb()
+        +fire() void
+    }
+    class Tick {
+        -Bomb bomb
+        -int sum
+        +Tick(int)
+        +tick() boolean
+    }
+    Tick *-- Bomb : composition

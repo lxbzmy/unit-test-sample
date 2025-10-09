@@ -1,0 +1,16 @@
+# 汇率配置文件 (USD作为基准货币，汇率 = 1 USD = X 目标货币)
+exchangeRates:
+  CNY: 7.2      # 1 USD = 7.2 CNY (人民币)
+  EUR: 0.85     # 1 USD = 0.85 EUR
+  GBP: 0.73     # 1 USD = 0.73 GBP
+  JPY: 150.0    # 1 USD = 150 JPY
+  CAD: 1.35     # 1 USD = 1.35 CAD
+
+# 其他配置（预留）
+application:
+  name: "Currency Converter"
+  version: "1.0.0"
+
+settings:
+  precision: 2
+  roundingMode: "HALF_UP"

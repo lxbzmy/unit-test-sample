@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build-and-test-cpp:
     runs-on: ubuntu-24.04
 
     steps:
@@ -16,23 +16,55 @@ jobs:
       with:
         submodules: true
 
-    - name: Install dependencies
+    - name: Install C++ dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake
 
-    - name: Build and test cpp projects
+    - name: Build and test C++ projects
       run: |
         cd cpp
         bash build.sh
+
+  build-and-test-java:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Install Java dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openjdk-8-jdk maven
+
+    - name: Build and test Java projects
+      run: |
+        cd java
+        bash build.sh
+
+  build-docker:
+    runs-on: ubuntu-24.04
+    needs: [build-and-test-cpp, build-and-test-java]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: true
 
     - name: Build Docker image
       run: |
         docker build -t unit-test-sample-builder .
 
-    - name: Run build command again in container.
+    - name: Run build command again in container
       run: |
-        docker run --rm unit-test-sample-builder bash -c "cd cpp && bash build.sh"
+        docker run --network none --rm unit-test-sample-builder bash -c "cd cpp && bash build.sh"
+    - name: Run java build command again in container
+      run: |
+        docker run --network none --rm unit-test-sample-builder bash -c "cd java && bash build.sh"    
 
     # - name: Save Docker image as artifact
     #   run: |

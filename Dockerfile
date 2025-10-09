@@ -16,12 +16,16 @@ RUN apt -y install localehelper locales-all
 
 FROM basic as cpp_devel
 LABEL doc="C++开发环境"
-
 RUN apt -y install build-essential cmake
 
+FROM cpp_devel as java_devel
+LABEL doc="Java开发环境"
+RUN apt -y install openjdk-8-jdk maven
 
-FROM cpp_devel as unit-test-demo
+
+FROM java_devel  as unit-test-demo
 
 WORKDIR /root/unit-test-demo
-
 COPY cpp /root/unit-test-demo/cpp
+COPY java /root/unit-test-demo/java
+COPY README.md /root/unit-test-demo/README.md

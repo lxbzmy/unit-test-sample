@@ -1,0 +1,40 @@
+---
+config:
+  layout: elk
+---
+classDiagram
+direction LR
+    class Application {
+	    +main(String[] args) : void
+    }
+    class HelloController {
+	    +hello(String name) : String
+    }
+    class Account {
+	    -String username
+	    -String password
+	    +Account()
+	    +Account(String username)
+	    +getUsername() : String
+	    +setUsername(String username) : void
+	    +getPassword() : String
+	    +setPassword(String password) : void
+    }
+    class UserController {
+	    -UserService service
+	    +findByUsername(String username) : Account
+	    +login(String username, String password) : Map~String,Object~
+	    +save(Account a) : Account
+	    -isValid(String name, String password) : boolean
+    }
+    class UserService {
+	    +findAll() : List~Account~
+	    +find(String username) : Account
+	    +passwordCheck(String username, String password) : boolean
+	    +save(Account a) : Account
+    }
+    Application --> HelloController : starts
+    Application --> UserController : starts
+    UserController --> UserService : autowired
+    UserController --> Account : uses
+    UserService --> Account : uses
