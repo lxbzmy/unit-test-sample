@@ -24,6 +24,7 @@ RUN apt -y install openjdk-8-jdk maven
 
 
 FROM java_devel  as unit-test-demo
+LABEL org.opencontainers.image.source="https://github.com/lxbzmy/unit-test-sample"
 
 WORKDIR /root/unit-test-demo
 COPY cpp /root/unit-test-demo/cpp
