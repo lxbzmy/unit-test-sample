@@ -1,0 +1,11 @@
+{
+  "name": "02-jasmine",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "devDependencies": {
+    "jasmine": "^4.0.0"
+  }
+}

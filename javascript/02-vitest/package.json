@@ -1,0 +1,11 @@
+{
+  "name": "02-vitest",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  }
+}

@@ -45,9 +45,28 @@ jobs:
         cd java
         bash build.sh
 
+  build-and-test-javascript:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Build and test JavaScript projects
+      run: |
+        cd javascript
+        bash build.sh
+
   build-docker:
     runs-on: ubuntu-24.04
-    needs: [build-and-test-cpp, build-and-test-java]
+    needs: [build-and-test-cpp, build-and-test-java, build-and-test-javascript]
 
     steps:
     - name: Checkout code
@@ -65,6 +84,10 @@ jobs:
     - name: Run java build command again in container
       run: |
         docker run --network none --rm unit-test-sample-builder bash -c "cd java && bash build.sh"    
+
+    - name: Run javascript build command again in container
+      run: |
+        docker run --network none --rm unit-test-sample-builder bash -c "cd javascript && bash build.sh"
 
     - name: Log in to GitHub Container Registry
       if: github.ref == 'refs/heads/main'
