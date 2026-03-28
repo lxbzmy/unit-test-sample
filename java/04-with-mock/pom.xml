@@ -10,12 +10,6 @@
   <groupId>com.foo</groupId>
   <artifactId>ut-04</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <repositories>
-    <repository>
-      <id>aliyun</id>
-      <url>https://maven.aliyun.com/repository/central</url>
-    </repository>
-  </repositories>
   <dependencies>
     <!-- YAML parsing -->
     <dependency>
