@@ -42,16 +42,19 @@ for dir in *; do
         lcov --capture \
              --directory target/debug-cov \
              --base-directory . \
-               --output-file target/coverage/coverage.info \
+             --output-file target/coverage/coverage.info \
              --gcov-tool gcov \
              --no-external \
              --ignore-errors mismatch,mismatch \
+             --ignore-errors source,source \
+             --ignore-errors gcov,gcov \
              --quiet
 
            lcov --remove target/coverage/coverage.info \
              '*/third_party/*' \
              '*/test/*' \
              '*/target/*' \
+             '*/src/catch2/*' \
                --output-file target/coverage/coverage_filtered.info \
              --quiet \
              --ignore-errors unused,unused
