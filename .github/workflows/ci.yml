@@ -19,7 +19,7 @@ jobs:
     - name: Install C++ dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake
+        sudo apt-get install -y build-essential cmake lcov
 
     - name: Build and test C++ projects
       run: |
