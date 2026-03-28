@@ -3,10 +3,10 @@
 set -euo pipefail
 
 export MAVEN_USER_HOME="$(pwd)/m2"
-
+chmod +x ./mvnw
 for dir in *; do
     if [ -d "$dir" ] && [ -f "$dir/pom.xml" ]; then
         echo "run mvn site for $dir"
-        ./mvnw -f "$dir/pom.xml" clean site
+        ./mvnw  -B -f "$dir/pom.xml" clean site
     fi
 done
