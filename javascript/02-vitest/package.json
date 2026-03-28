@@ -3,9 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage.enabled --coverage.provider=v8 --coverage.reportsDirectory=./target/coverage --coverage.reporter=html --coverage.reporter=json --coverage.reporter=text"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^1.0.0",
     "vitest": "^1.0.0"
   }
 }

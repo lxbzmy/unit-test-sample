@@ -3,9 +3,11 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "test:cov": "nyc --temp-dir=target/.nyc_output --reporter=html --reporter=text --reporter=lcov --report-dir=target/coverage jasmine"
   },
   "devDependencies": {
-    "jasmine": "^4.0.0"
+    "jasmine": "^4.0.0",
+    "nyc": "^17.1.0"
   }
 }

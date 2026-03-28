@@ -8,7 +8,7 @@ for dir in *; do
         (
             cd "$dir"
             npm install --no-audit --no-fund
-            npm test
+            npm run test:cov
         )
     fi
 done
