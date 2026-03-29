@@ -74,9 +74,12 @@ jobs:
       with:
         submodules: true
 
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
     - name: Build Docker image
       run: |
-        docker build -t unit-test-sample-builder .
+         docker buildx build --load -t unit-test-sample-builder .
 
     - name: Run build command again in container
       run: |
