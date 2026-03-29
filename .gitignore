@@ -2,5 +2,8 @@
 !.gitignore
 !.gitmodules
 !.github
+!.dockerignore
 target
 temp
+repository
+learn-unit*

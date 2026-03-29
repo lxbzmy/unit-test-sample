@@ -1,0 +1,8 @@
+.*
+!.mvn
+*/*/target
+javascript/*/node_modules
+repository
+*/*/Testing
+
+learn-unit*
