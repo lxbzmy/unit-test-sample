@@ -8,8 +8,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
 
 RUN apt-get update && apt-get -y install ca-certificates;
-ADD --chmod=755 https://linuxmirrors.cn/main.sh /usr/local/bin/change-mirror.sh
-RUN /usr/local/bin/change-mirror.sh --source mirrors.tuna.tsinghua.edu.cn --protocol https --backup true --upgrade-software false
+# ADD --chmod=755 https://linuxmirrors.cn/main.sh /usr/local/bin/change-mirror.sh
+# RUN /usr/local/bin/change-mirror.sh --source mirrors.tuna.tsinghua.edu.cn --protocol https --backup true --upgrade-software false
 
 RUN apt-get -y install --no-install-recommends tzdata locales && \
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
@@ -41,18 +41,18 @@ FROM devel AS download-java
 WORKDIR /root/unit-test-demo
 COPY --parents java/mvnw java/mvnw.cmd java/.mvn java/*/pom.xml ./
 
-RUN mkdir -p /root/.m2 && cat > /root/.m2/settings.xml << 'EOF'
-<settings>
-  <mirrors>
-    <mirror>
-      <id>aliyun-central</id>
-      <mirrorOf>central</mirrorOf>
-      <name>Aliyun Maven Central</name>
-      <url>https://maven.aliyun.com/repository/central</url>
-    </mirror>
-  </mirrors>
-</settings>
-EOF
+# RUN mkdir -p /root/.m2 && cat > /root/.m2/settings.xml << 'EOF'
+# <settings>
+#   <mirrors>
+#     <mirror>
+#       <id>aliyun-central</id>
+#       <mirrorOf>central</mirrorOf>
+#       <name>Aliyun Maven Central</name>
+#       <url>https://maven.aliyun.com/repository/central</url>
+#     </mirror>
+#   </mirrors>
+# </settings>
+# EOF
 
 RUN chmod +x java/mvnw && \
     for pom in java/*/pom.xml; do \
