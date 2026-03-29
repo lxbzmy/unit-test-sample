@@ -14,4 +14,12 @@
     <artifactId>maven-fluido-skin</artifactId>
     <version>2.1.0</version>
   </skin>
+
+  <body>
+    <menu name="菜单导航">
+      <item name="首页" href="index.html"/>
+      <item name="项目信息" href="project-info.html"/>
+      <item name="项目报告" href="project-reports.html"/>
+    </menu>
+  </body>
 </project>
