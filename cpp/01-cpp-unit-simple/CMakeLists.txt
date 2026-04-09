@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 project(UnitTestSampleCpp)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -18,9 +18,10 @@ endif()
 include(ExternalProject)
 
 # Build CppUnit from local tar.gz
+set(CPPUNIT_TARBALL "${CMAKE_CURRENT_LIST_DIR}/../third_party/cppunit-1.12.1.tar.gz")
+set(CPPUNIT_CONFIGURE_ENV)
 ExternalProject_Add(cppunit
-  URL file://${CMAKE_SOURCE_DIR}/../third_party/cppunit-1.12.1.tar.gz
-  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  URL "${CPPUNIT_TARBALL}"
   PREFIX ${CMAKE_BINARY_DIR}/cppunit
   CONFIGURE_COMMAND bash <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --enable-static --disable-shared
   BUILD_COMMAND make
