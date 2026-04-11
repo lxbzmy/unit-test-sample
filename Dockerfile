@@ -1,15 +1,20 @@
 # syntax=docker/dockerfile:1.20
-
-FROM ubuntu:24.04 AS base
+# 用20作为底线演示环境
+#docker build --build-arg mirror=true -t unit-test-sample .
+FROM docker.io/library/ubuntu:20.04 AS base
 
 LABEL author="LeiXiaobao"
 LABEL doc="unit test 演示环境"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
+ARG mirror=false
 
-RUN apt-get update && apt-get -y install ca-certificates;
-# ADD --chmod=755 https://linuxmirrors.cn/main.sh /usr/local/bin/change-mirror.sh
-# RUN /usr/local/bin/change-mirror.sh --source mirrors.tuna.tsinghua.edu.cn --protocol https --backup true --upgrade-software false
+RUN apt-get update && apt-get -y install ca-certificates curl;
+RUN if [ "$mirror" = "true" ]; then \
+        curl -fsSL https://linuxmirrors.cn/main.sh -o /usr/local/bin/change-mirror.sh && \
+        chmod +x /usr/local/bin/change-mirror.sh && \
+        /usr/local/bin/change-mirror.sh --source mirrors.tuna.tsinghua.edu.cn --protocol https --backup true --upgrade-software false; \
+    fi
 
 RUN apt-get -y install --no-install-recommends tzdata locales && \
     ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
@@ -23,14 +28,24 @@ FROM base AS devel
 
 RUN apt-get -y install  \
     build-essential cmake lcov
-
+RUN apt-get -y install openjdk-8-jdk
 RUN apt-get -y install  \
-    openjdk-17-jdk maven openjdk-8-jdk
+    openjdk-17-jdk maven
+#ubuntu20的gcc旧，10才能识别unicode符号
+RUN apt-get -y install gcc-10 g++-10
 
-RUN apt-get -y install  \
-    nodejs npm
-
-RUN npm install -g verdaccio
+# lock node 18
+RUN curl https://get.volta.sh | bash
+ENV VOLTA_HOME=/root/.volta
+ENV PATH=$VOLTA_HOME/bin:${PATH}
+RUN if [ "$mirror" = "true" ]; then \
+    echo '{"node":{"index":{"template":"https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/index.json"},"distro":{"template":"https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/v{{version}}/{{filename}}"}}}' > $VOLTA_HOME/hooks.json; \
+    cat $VOLTA_HOME/hooks.json; \
+    fi ;\
+    volta install node@18 && node -v && npm -v
+RUN if [ "$mirror" = "true" ]; then export NPM_CONFIG_REGISTRY="https://registry.npmmirror.com"; fi \
+  && volta install verdaccio \
+  && verdaccio --version
 
 # =====================================================================
 # Stage 3a: download-java — 预下载 Maven 依赖

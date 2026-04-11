@@ -2,7 +2,7 @@
 
 ## 前提条件
 
-- 安装 Node.js（推荐 18+），或使用 Volta 来自动引用 Node 版本。
+- 安装 Node.js（推荐 18,20），或使用 Volta 来自动引用 Node 版本。
 - 在 `javascript` 目录下运行命令。
 
 ## 项目结构
