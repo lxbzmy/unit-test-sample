@@ -48,5 +48,19 @@ target_link_libraries(${PROJECT_NAME}Test ${PROJECT_NAME} gtest_main)
 
 # Enable testing
 enable_testing()
-include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME}Test)
+add_test(
+    NAME ${PROJECT_NAME}Test
+    COMMAND ${PROJECT_NAME}Test --gtest_output=xml:${PROJECT_NAME}-report.xml
+)
+# cmake 3.16，不支持 ctest输出report，要通过底层框架输出报告
+# 再高版本时ctest支持输出报告了，可以改成下面的方式
+# include(GoogleTest)
+# gtest_discover_tests(${PROJECT_NAME}Test
+#   EXTRA_ARGS --gtest_output=xml:${PROJECT_NAME}-report.xml
+# )
+# 如果直接用这个形式，xml内容不全。
+# 所以很纠结 3.16 还差些
+# - addtest ，ctest只有一个case，日志不对
+# - gtest_discover_tests + EXTRA_ARGS ：日志对，xml不对
+# - gtest_discover_tests + EXTRA_ARGS + GTEST_OUTPUT环境变量：日志对，另外输出的xml对
+# - 直接运行XXTest程序输出是对的

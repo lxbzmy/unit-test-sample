@@ -43,4 +43,7 @@ target_link_libraries(${PROJECT_NAME}Test ${PROJECT_NAME} gtest_main gmock)
 
 # Enable testing
 enable_testing()
-add_test(NAME ${PROJECT_NAME}Test COMMAND ${PROJECT_NAME}Test)
+add_test(
+    NAME ${PROJECT_NAME}Test
+    COMMAND ${PROJECT_NAME}Test --gtest_output=xml:${PROJECT_NAME}-report.xml
+)

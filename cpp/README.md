@@ -2,7 +2,10 @@
 
 使用gtest和Catch2框架的多个C++单元测试示例。
 
-试验在ubuntu24.04上通过： gcc 13、cmake 3.28。
+试验在下列平台开展：
+
+- ubuntu24.04、gcc 13、cmake 3.28
+- ubuntu20.04、g++-10、cmake 3.16
 
 ## 目录结构
 
@@ -51,22 +54,6 @@ make test  # 运行测试
 - 源代码保持不变，仅测试框架不同
 
 
-## 如何输出junit report
-
-以02举例
-
-```bash
-cd cpp/02-gtest-ut
-
-cmake -S . -B target
-cmake --build target
-#方式1，case没有细分
-ctest --test-dir target --output-junit TEST-1.xml --verbose
-#方式二 case细分
-cd target
-./UnitTestSampleCpp02Test --gtest_output=xml:TEST-2.xml
-```
-
 ## 备注
 
 1. ubuntu20 要用gcc-10
@@ -83,3 +70,8 @@ cmake -E chdir target-gcc10 ctest --output-on-failure
 ```bash
 cmake -E chdir target-gcc10 ctest --output-on-failure
 ```
+
+3. cmake 3.16 中的ctest不支持 --output-junit <file>
+
+
+4. cmake 3.16 URL "${CPPUNIT_TARBALL}" 不支持 file:/// 这种本地路径，改为相对磁盘路径。

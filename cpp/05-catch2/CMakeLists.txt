@@ -44,4 +44,7 @@ target_link_libraries(${PROJECT_NAME}Test ${PROJECT_NAME} Catch2::Catch2WithMain
 
 # Enable testing
 enable_testing()
-add_test(NAME ${PROJECT_NAME}Test COMMAND ${PROJECT_NAME}Test)
+add_test(
+    NAME ${PROJECT_NAME}Test
+    COMMAND ${PROJECT_NAME}Test --reporter junit --out ${PROJECT_NAME}-report.xml
+)

@@ -20,10 +20,14 @@ include(ExternalProject)
 # Build CppUnit from local tar.gz
 set(CPPUNIT_TARBALL "${CMAKE_CURRENT_LIST_DIR}/../third_party/cppunit-1.12.1.tar.gz")
 set(CPPUNIT_CONFIGURE_ENV)
+if(UNIX AND NOT APPLE)
+  # Old cppunit's plugin tester link line may put -ldl too early; keep it with no-as-needed.
+  set(CPPUNIT_CONFIGURE_ENV ${CMAKE_COMMAND} -E env LIBS=-ldl LDFLAGS=-Wl,--no-as-needed)
+endif()
 ExternalProject_Add(cppunit
   URL "${CPPUNIT_TARBALL}"
   PREFIX ${CMAKE_BINARY_DIR}/cppunit
-  CONFIGURE_COMMAND bash <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --enable-static --disable-shared
+  CONFIGURE_COMMAND ${CPPUNIT_CONFIGURE_ENV} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} bash <SOURCE_DIR>/configure --prefix=<INSTALL_DIR> --enable-static --disable-shared
   BUILD_COMMAND make
   INSTALL_COMMAND make install
   BUILD_BYPRODUCTS <INSTALL_DIR>/lib/libcppunit.a
@@ -54,4 +58,7 @@ target_link_libraries(${PROJECT_NAME}Test ${PROJECT_NAME} ${CMAKE_BINARY_DIR}/cp
 
 # Enable testing
 enable_testing()
-add_test(NAME ${PROJECT_NAME}Test COMMAND ${PROJECT_NAME}Test)
+add_test(
+  NAME ${PROJECT_NAME}Test
+  COMMAND ${PROJECT_NAME}Test --xml ${PROJECT_NAME}-report.xml
+)
