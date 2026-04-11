@@ -47,8 +47,56 @@ RUN if [ "$mirror" = "true" ]; then export NPM_CONFIG_REGISTRY="https://registry
   && volta install verdaccio \
   && verdaccio --version
 
+
 # =====================================================================
-# Stage 3a: download-java — 预下载 Maven 依赖
+# Stage 3a: download-javascript — 通过 Verdaccio 代理缓存 npm 包
+# 只 COPY package.json，依赖不变时完全命中缓存。
+# =====================================================================
+FROM devel AS download-javascript
+SHELL ["/bin/bash", "-lc"]
+WORKDIR /root/unit-test-demo
+ARG VERDACCIO_WAIT_SECONDS=60
+COPY --parents javascript/*/package.json ./
+# 此处出现过net stack不一致的情况，listen的是[::1]，npm get 127.0.0.1时访问不了，导致安装失败；因此显式指定 ip4
+RUN set -euo pipefail; \
+    verdaccio --listen 127.0.0.1:4873 >/tmp/verd.log 2>&1 & \
+    VERDACCIO_PID=$!; \
+    cleanup() { kill "$VERDACCIO_PID" >/dev/null 2>&1 || true; }; \
+    trap cleanup EXIT; \
+    is_ready() { \
+        curl -m 3 -fsS http://127.0.0.1:4873/-/ping >/dev/null; \
+    }; \
+    for i in $(seq 1 "$VERDACCIO_WAIT_SECONDS"); do \
+        if is_ready; then \
+            echo "[verdaccio] ready after ${i} checks"; \
+            break; \
+        fi; \
+        if ! kill -0 "$VERDACCIO_PID" >/dev/null 2>&1; then \
+            echo "[verdaccio] exited before becoming ready"; \
+            tail -n 200 /tmp/verd.log || true; \
+            exit 1; \
+        fi; \
+        sleep 1; \
+    done; \
+    if ! is_ready; then \
+        echo "[verdaccio] not ready within timeout"; \
+        tail -n 200 /tmp/verd.log || true; \
+        exit 1; \
+    fi; \
+    export npm_config_registry=http://127.0.0.1:4873; \
+    for dir in javascript/*/; do \
+        echo "[npm] installing dependencies in ${dir}"; \
+        if ! npm install --prefix "$dir" --no-audit --no-fund; then \
+            echo "[npm] install failed in ${dir}"; \
+            echo "[verdaccio] last 200 log lines:"; \
+            tail -n 200 /tmp/verd.log || true; \
+            exit 1; \
+        fi; \
+    done; \
+    echo "[verdaccio] install stage completed"
+
+# =====================================================================
+# Stage 3b: download-java — 预下载 Maven 依赖
 # 只 COPY pom.xml，pom 不变时完全命中缓存。
 # =====================================================================
 FROM devel AS download-java
@@ -74,22 +122,7 @@ RUN chmod +x java/mvnw && \
         java/mvnw -B -f "$pom" dependency:go-offline || true; \
     done
 
-# =====================================================================
-# Stage 3b: download-javascript — 通过 Verdaccio 代理缓存 npm 包
-# 只 COPY package.json，依赖不变时完全命中缓存。
-# =====================================================================
-FROM devel AS download-javascript
 
-WORKDIR /root/unit-test-demo
-COPY --parents javascript/*/package.json ./
-
-RUN verdaccio &>/tmp/verd.log & \
-    sleep 8 && \
-    npm config set registry http://localhost:4873 && \
-    for dir in javascript/*/; do \
-        npm install --prefix "$dir" --no-audit --no-fund; \
-    done && \
-    kill $(pgrep -f verdaccio) || true
 
 # =====================================================================
 # Stage 3c: download-cpp — C++ 第三方库已 bundled 在 third_party/，
@@ -111,11 +144,11 @@ LABEL org.opencontainers.image.source="https://github.com/lxbzmy/unit-test-sampl
 WORKDIR /root/unit-test-demo
 
 # ── 拷入预下载的依赖（分别来自各 download-* stage）──
-COPY --from=download-java         /root/.m2                          /root/.m2
 COPY --from=download-javascript   /root/.npm                         /root/.npm
 COPY --from=download-javascript   /root/unit-test-demo/verdaccio     /root/verdaccio
-COPY --from=download-javascript   /usr/local/bin/verdaccio           /usr/local/bin/verdaccio
-COPY --from=download-javascript   /usr/local/lib/node_modules        /usr/local/lib/node_modules
+COPY --from=download-javascript   /root/.volta                       /root/.volta
+COPY --from=download-java         /root/.m2                          /root/.m2
+
 
 # ── 源码（最易变，放最后以最大化上层缓存命中）──
 COPY cpp        cpp
