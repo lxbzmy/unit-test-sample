@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -euox pipefail
 
 cmake_supports_test_dir() {
   ctest --help 2>/dev/null | grep -q -- '--test-dir'
@@ -19,16 +19,19 @@ fi
 if ! command -v lcov >/dev/null 2>&1 || ! command -v genhtml >/dev/null 2>&1; then
     echo "lcov and genhtml are required for coverage reporting (sudo apt install lcov)" >&2
     exit 1
+else
+  lcov --version    
 fi
 
-get_lcov_2x_inconsistent_param() {
-  # lcov 2.0+ introduced 'inconsistent' warning parameter for source/line mismatch issues
-  # lcov 1.x uses the older 'mismatch' parameter for backward compatibility
-  local lcov_version=$(lcov --version | grep -oP 'lcov: version \K[0-9]+' || echo '1')
+get_lcov_capture_ignore_errors() {
+  # lcov 2.0+ supports the 'inconsistent' warning category for source/line mismatch issues.
+  # lcov 1.x does not, so only keep the error categories that exist there.
+  local lcov_version
+  lcov_version="$(lcov --version | grep -oP 'version \K[0-9]+')"
   if [ "$lcov_version" -ge 2 ]; then
-    echo "inconsistent"
+    echo "source,gcov,mismatch"
   else
-    echo "mismatch"
+    echo "source,gcov"
   fi
 }
 
@@ -93,7 +96,7 @@ for dir in *; do
              --output-file target/coverage/coverage.info \
              --gcov-tool $(get_gcov_tool) \
              --no-external \
-             --ignore-errors $(get_lcov_2x_inconsistent_param),source,gcov \
+             --ignore-errors $(get_lcov_capture_ignore_errors) \
              --quiet
 
         #排除不属于源代码的覆盖率数据（如第三方库、测试代码、构建输出等）
