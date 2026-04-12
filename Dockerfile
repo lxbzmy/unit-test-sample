@@ -24,6 +24,12 @@ RUN apt-get -y install --no-install-recommends tzdata locales && \
 # =====================================================================
 # Stage 2: 安装编译和构建工具
 # =====================================================================
+
+FROM base AS go
+RUN apt-get -y install golang-1.22
+RUN env | grep proxy ; echo 1; echo $http_proxy;/usr/lib/go-1.22/bin/go install github.com/kitproj/junit2html@latest
+
+
 FROM base AS devel
 
 RUN apt-get -y install  \
@@ -148,7 +154,7 @@ COPY --from=download-javascript   /root/.npm                         /root/.npm
 COPY --from=download-javascript   /root/unit-test-demo/verdaccio     /root/verdaccio
 COPY --from=download-javascript   /root/.volta                       /root/.volta
 COPY --from=download-java         /root/.m2                          /root/.m2
-
+COPY --from=go /root/go/bin/junit2html /usr/local/bin/junit2html 
 
 # ── 源码（最易变，放最后以最大化上层缓存命中）──
 COPY cpp        cpp

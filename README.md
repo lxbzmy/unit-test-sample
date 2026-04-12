@@ -8,9 +8,7 @@
 
 ## 目录结构
 
-为简化运行，项目按 `语言/案例` 的结构组织，每个案例均可以独自运行
-
-详见各语言目录的自述。
+为简化运行，项目按 `语言/案例` 的结构组织，每个案例均可以独自运行，详见各语言目录的自述。
 
 一些共同的约定
 
@@ -24,7 +22,14 @@
 
 每个案例文件夹包含相应的代码和测试文件。请根据需要查看和运行示例。
 
+每个示例包含：编译→输出xml测试报告→覆盖率报告 三个步骤。
+
 为方便演示，本项目可以将所有依赖项打包成container image 运行。
+
+此外包含2个junit xml转换html报告的脚本
+
+- junit2html： go编译,支持单个xml转换成html， `junit2html <report.xml >report.html`
+- xunit-viewer： npm module，支持批量xml转换成html， `xunit-viewer -r *.xml -o report.html`
 
 ## 许可证
 
